@@ -1,0 +1,261 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Vidyarthi Online Nikal 2026 - Frontend Implementation",
+  "requirements": [
+    {
+      "id": "REQ-2",
+      "summary": "Implement three-role authentication system on frontend with admin, teacher, and student login flows",
+      "acceptanceCriteria": [
+        "Admin can log in with username 'admin' and password 'admin'",
+        "Teacher can log in with a mobile number registered in TeacherLogin records",
+        "Student can log in with UDISE number + class + division + attendance number matching a student record",
+        "Invalid credentials show an error message",
+        "Logout clears the session and redirects to the login page",
+        "The login page has a stylish, colorful design with role-selection tabs or cards"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/contexts/AuthContext.tsx",
+          "operation": "create",
+          "description": "Create authentication context to manage login state for three roles (admin, teacher, student). Store authenticated session including role and identity fields (UDISE, class, division, attendance number for student; mobile for teacher; username for admin). Provide login/logout methods and expose session data to child components."
+        },
+        {
+          "path": "frontend/src/pages/LoginPage.tsx",
+          "operation": "create",
+          "description": "Create login page with three role-selection cards (Admin, Teacher, Student) in a colorful, gradient-rich design. Each card opens a role-specific login form: Admin form has username and password fields; Teacher form has mobile number field; Student form has UDISE number, class, division, and attendance number fields. On submit, validate credentials and set session in AuthContext. Display error messages for invalid credentials."
+        },
+        {
+          "path": "frontend/src/components/LogoutButton.tsx",
+          "operation": "create",
+          "description": "Create logout button component that calls AuthContext logout method, clears session state, and redirects to login page. Make accessible from all authenticated pages."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Build collapsible sidebar navigation dashboard with role-based visibility for 8 menu items",
+      "acceptanceCriteria": [
+        "Sidebar collapses to icon-only mode and expands to full labels",
+        "Admin can see and access all 8 menu pages",
+        "Teacher sees 7 pages (all except Teacher Manage)",
+        "Student sees only Student Result Print page",
+        "Active menu item is visually highlighted",
+        "Sidebar is mobile-responsive"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/Sidebar.tsx",
+          "operation": "create",
+          "description": "Create collapsible sidebar component with 8 menu items: Home, School Info (शाळा माहिती), Teacher Info (शिक्षक माहिती), Student Info (विद्यार्थी माहिती), Enter Result (निकाल भरा), Progress Report (प्रगती पत्रक), Student Result Print (विद्यार्थी निकाल Print), Teacher Manage. Implement role-based filtering using AuthContext: admin sees all 8; teacher sees 7 (excludes Teacher Manage); student sees only Student Result Print. Add collapse/expand toggle with smooth animation. Highlight active route. Use colored icons for each menu item. Make mobile-responsive with icon-only mode on small screens."
+        },
+        {
+          "path": "frontend/src/layouts/DashboardLayout.tsx",
+          "operation": "create",
+          "description": "Create dashboard layout component that wraps authenticated pages with Sidebar component and includes LogoutButton in header. Provide main content area with proper spacing. Use AuthContext to guard access (redirect to login if not authenticated)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Build Home page with three colored summary stat cards showing student statistics",
+      "acceptanceCriteria": [
+        "Three colored stat cards are displayed on the Home page",
+        "Card 1 shows total student count",
+        "Card 2 shows count of students with at least one result record",
+        "Card 3 shows count of students with no result records",
+        "Stats reflect real-time data from the canister"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/HomePage.tsx",
+          "operation": "create",
+          "description": "Create Home page with three colored stat cards in a responsive grid. Card 1: Total Students (fetch from backend getAllStudents, filter by UDISE if teacher role). Card 2: Students with results (cross-reference students with getAllResults). Card 3: Students without results (students not in results). Each card has distinct background color (warm/energetic palette), large count display, and descriptive label. Use AuthContext to determine if admin (all schools) or teacher (filter by UDISE). Fetch data on mount and display loading state."
+        },
+        {
+          "path": "frontend/src/hooks/useStudentStats.ts",
+          "operation": "create",
+          "description": "Create custom hook to fetch and compute student statistics. Call backend getAllStudents and getAllResults. Compute totals for: all students, students with results, students without results. Accept optional UDISE filter for teacher role. Return stats object with loading and error states."
+        }
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "summary": "Build School Info page with Add/Edit/Delete functionality for school records",
+      "acceptanceCriteria": [
+        "Clicking 'Add New School' opens a form modal",
+        "Form has all 6 fields: UDISE Number, School Name, Taluka, District, Year, Class",
+        "Submitting saves the record and it appears in the data table immediately",
+        "Each row has small Edit and Delete buttons",
+        "Edit opens the form pre-filled with the row's data",
+        "Delete removes the record after a confirmation prompt"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/SchoolInfoPage.tsx",
+          "operation": "create",
+          "description": "Create School Info page with 'Add New School' button that opens SchoolFormModal. Display all schools in a data table using getAllSchools backend call. Each row includes Edit (opens modal pre-filled) and Delete buttons (shows confirmation dialog before calling backend delete). Refresh table after add/edit/delete. Use shadcn/ui Table component for clean mobile-responsive layout."
+        },
+        {
+          "path": "frontend/src/components/SchoolFormModal.tsx",
+          "operation": "create",
+          "description": "Create modal component for school form with 6 fields: UDISE Number, School Name, Taluka, District, Year, Class. Support create and edit modes (pre-fill in edit mode). On submit, call backend addSchool or updateSchool. Use shadcn/ui Dialog and Form components. Validate all required fields. Close modal and trigger parent refresh on success."
+        }
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "summary": "Build Teacher Info page with Add/Edit/Delete functionality and auto-fill from UDISE",
+      "acceptanceCriteria": [
+        "Clicking 'Add New Teacher' opens a form modal",
+        "Entering a UDISE number auto-fills School Name, Taluka, and District",
+        "Form has all 9 fields",
+        "Saved teacher appears in the data table",
+        "Edit and Delete buttons work correctly per row"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/TeacherInfoPage.tsx",
+          "operation": "create",
+          "description": "Create Teacher Info page with 'Add New Teacher' button that opens TeacherFormModal. Display all teachers in data table using getAllTeachers backend call. Each row includes Edit and Delete buttons. Refresh table after mutations."
+        },
+        {
+          "path": "frontend/src/components/TeacherFormModal.tsx",
+          "operation": "create",
+          "description": "Create modal component for teacher form with 9 fields: Teacher Name, Date of Birth, Class, Division, Mobile Number, School UDISE Number, School Name (auto-filled), Taluka (auto-filled), District (auto-filled). When UDISE is entered, fetch school record from backend using getSchool and auto-populate School Name, Taluka, District fields. On submit, call backend addTeacher or updateTeacher. Use shadcn/ui components. Handle create and edit modes."
+        }
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "summary": "Build Student Info page with Add/Edit/Delete functionality, teacher dropdown, and auto-fill cascades",
+      "acceptanceCriteria": [
+        "Clicking 'Add New Student' opens a form modal",
+        "Teacher Name dropdown is populated from teacher records matching the entered UDISE",
+        "Selecting a teacher auto-fills Class and Division",
+        "Entering UDISE auto-fills School Name, Taluka, District",
+        "All 11 fields are present in the form",
+        "Submitted student appears in the data table with Edit and Delete buttons"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/StudentInfoPage.tsx",
+          "operation": "create",
+          "description": "Create Student Info page with 'Add New Student' button that opens StudentFormModal. Display all students in data table using getAllStudents backend call. Each row includes Edit and Delete buttons. Refresh table after mutations."
+        },
+        {
+          "path": "frontend/src/components/StudentFormModal.tsx",
+          "operation": "create",
+          "description": "Create modal component for student form with 11 fields: UDISE Number, Teacher Name (dropdown), Class (auto), Division (auto), Student Name, Attendance Number, Date of Birth, Mother's Name, School Name (auto), Taluka (auto), District (auto). When UDISE is entered, fetch school using getSchool to auto-fill School Name, Taluka, District, and filter teachers by schoolId for Teacher Name dropdown. When Teacher is selected, auto-fill Class and Division from teacher record. On submit, call backend addStudent or updateStudent. Support create and edit modes."
+        }
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "summary": "Build Enter Result page with UDISE and student dropdowns, dual semester sections with 9 subjects and grade dropdowns",
+      "acceptanceCriteria": [
+        "UDISE dropdown filters students; student selection auto-fills Name, Class, Division",
+        "Semester 1 section has all 9 subject grade dropdowns with correct grade options",
+        "Semester 2 section has the same structure as Semester 1",
+        "Each semester section has Special Progress, Hobby, and Needs Improvement text fields",
+        "Submit saves the result record to the canister",
+        "Saved results appear in a data table with Edit and Delete buttons"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/EnterResultPage.tsx",
+          "operation": "create",
+          "description": "Create Enter Result (निकाल भरा) page with UDISE dropdown (populated from getAllSchools) and student dropdown (filtered by selected UDISE from getAllStudents). Upon student selection, auto-fill Student Name, Class, Division. Display two sections: Semester 1 (प्रथम सत्र) and Semester 2 (द्वितीय सत्र). Each section has 9 subject rows (भाषा, हिंदी, इंग्रजी, गणित, परिसर अभ्यास भाग1, परिसर अभ्यास भाग2, कला, कार्यानुभव, शारीरिक शिक्षण) with grade dropdowns (options: अ1, अ2, ब1, ब2, क1, क2, ड, इ1, ई2), plus text fields for Special Progress (विशेष प्रगती), Hobby/Interest (आवड/छंद), Needs Improvement (सुधारणा आवश्यक). Submit calls backend addResult. Display saved results in data table below form with Edit and Delete buttons."
+        }
+      ]
+    },
+    {
+      "id": "REQ-9",
+      "summary": "Build Progress Report page with four cascading dropdowns, formatted report display, and Print/Download buttons",
+      "acceptanceCriteria": [
+        "All four dropdowns are present and cascade correctly",
+        "Search button retrieves and displays the full formatted progress report",
+        "Report shows school info, student info, Semester 1 results, and Semester 2 results",
+        "Print button triggers the browser's print dialog with a clean print layout",
+        "Download button initiates a file download of the report"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/ProgressReportPage.tsx",
+          "operation": "create",
+          "description": "Create Progress Report (प्रगती पत्रक) page with four dropdowns: UDISE Number, Class (इयत्ता), Division (तुकडी), Attendance Number (हजेरी नंबर). Cascade dropdowns: UDISE filters students, Class filters by class, Division filters by division, Attendance Number selects specific student. 'Search Progress Report' button fetches student, school, and result records from backend, then displays formatted report card showing: school information (name, UDISE, taluka, district), student information (name, class, division, DOB, mother's name), Semester 1 results (all 9 subjects with grades, special progress, hobby, needs improvement), Semester 2 results in same format. Include Print button (window.print() with print-specific CSS) and Download button (generate HTML/PDF blob and trigger download). Use clean card-based layout for report sections."
+        }
+      ]
+    },
+    {
+      "id": "REQ-10",
+      "summary": "Build Student Result Print page identical to Progress Report, accessible to all roles with student pre-fill for student role",
+      "acceptanceCriteria": [
+        "Page is accessible to all three roles",
+        "For student login, dropdowns are pre-filled with the student's own credentials",
+        "Search retrieves and displays the full result report",
+        "Print and Download buttons work correctly",
+        "Student role cannot navigate to any other page from this view"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/StudentResultPrintPage.tsx",
+          "operation": "create",
+          "description": "Create Student Result Print (विद्यार्थी निकाल Print) page with identical functionality to Progress Report page: four dropdowns (UDISE, Class, Division, Attendance Number), Search button, formatted report display (school info + student info + Semester 1 & 2 results), Print button, Download button. Use AuthContext to detect if logged-in user is student role; if so, pre-fill dropdowns with student's own UDISE, class, division, attendance number from session. Make accessible to Admin, Teacher, and Student roles. Reuse report formatting logic from ProgressReportPage or extract to shared component."
+        }
+      ]
+    },
+    {
+      "id": "REQ-11",
+      "summary": "Build Teacher Manage page (admin-only) with Add/Edit/Delete for teacher login credentials",
+      "acceptanceCriteria": [
+        "Page is visible only to admin role",
+        "Add New Teacher Login form has UDISE and Mobile Number fields",
+        "Submitted records appear in the data table",
+        "Edit and Delete buttons work per row",
+        "Teacher login mobile numbers saved here are used to authenticate teacher logins"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/TeacherManagePage.tsx",
+          "operation": "create",
+          "description": "Create Teacher Manage page (admin-only). Include 'Add New Teacher Login' button that opens TeacherLoginFormModal. Display all teacher login records in data table (fetch from backend - note: this requires backend support for TeacherLogin CRUD). Each row has Edit and Delete buttons. Use AuthContext to guard page: only admin role can access. Refresh table after mutations."
+        },
+        {
+          "path": "frontend/src/components/TeacherLoginFormModal.tsx",
+          "operation": "create",
+          "description": "Create modal component for teacher login form with two fields: School UDISE Number and Teacher Mobile Number. On submit, call backend to save TeacherLogin record (addTeacherLogin or equivalent). Support create and edit modes. Use shadcn/ui Dialog and Form components."
+        }
+      ]
+    },
+    {
+      "id": "REQ-12",
+      "summary": "Apply vibrant, colorful, mobile-first visual theme throughout the entire app",
+      "acceptanceCriteria": [
+        "Login page has a colorful hero area with clearly differentiated role-selection options",
+        "Dashboard sidebar has colored icons and smooth collapse animation",
+        "All pages use a consistent vibrant color palette",
+        "Data tables are readable and well-spaced on mobile",
+        "Forms use clear labels, proper spacing, and colored submit buttons",
+        "Overall design is mobile-responsive and works well on phone screen widths"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/index.css",
+          "operation": "modify",
+          "description": "Update global styles to apply a vibrant, gradient-rich color palette with warm and energetic accent colors (orange, green, yellow, red tones; avoid blue/purple dominance). Define CSS custom properties for primary, secondary, accent colors. Add utility classes for gradient backgrounds, colored cards, and smooth transitions. Ensure all text is readable on colored backgrounds. Add print-specific styles (@media print) for clean report printing."
+        },
+        {
+          "path": "frontend/tailwind.config.js",
+          "operation": "modify",
+          "description": "Extend Tailwind theme with custom color palette matching the vibrant, warm design requirements. Define colors for primary (warm orange), secondary (energetic green), accent (yellow/red), and neutral shades. Configure responsive breakpoints for mobile-first design. Add custom animation for sidebar collapse/expand."
+        },
+        {
+          "path": "frontend/src/components/ColorfulCard.tsx",
+          "operation": "create",
+          "description": "Create reusable ColorfulCard component for stat cards and content sections. Accept props for background color, title, value/content, and optional icon. Apply bold typography, proper padding, and shadow effects. Make responsive for mobile screens."
+        }
+      ]
+    }
+  ]
+}

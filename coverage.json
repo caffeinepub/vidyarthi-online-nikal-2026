@@ -1,0 +1,272 @@
+{
+  "kind": "coverage_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-25T18:43:54.568Z",
+  "sources": {
+    "buildRequest": true,
+    "implementationPlan": true
+  },
+  "requirements": {
+    "total": 12,
+    "implemented": 11,
+    "items": [
+      {
+        "id": "REQ-1",
+        "summary": "Implement backend data models and CRUD operations in the Motoko actor for: School (UDISE number, school name, taluka, district, year, class), Teacher (name, DOB, class, division, mobile number, UDISE number), Student (UDISE number, teacher name, class, division, student name, attendance number, DOB, mother's name, school name, taluka, district), Result (student ID, semester 1 grades for 9 subjects, special progress, hobby, improvement notes; same fields for semester 2), and TeacherLogin (UDISE number, mobile number). Expose query and update functions for add, edit, delete, and fetch for each entity. All data must be stored in stable variables in the canister for lifetime persistence and cross-device sync.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-10",
+        "summary": "Build the Student Result Print (विद्यार्थी निकाल Print) page. This page is identical in functionality to the Progress Report page: four dropdowns (UDISE, Class, Division, Attendance Number), a Search button, display of full school + student + semester 1 & semester 2 result information, a Print button, and a Download button. This page must be accessible to Admin, Teacher, and Student roles. For Student role, pre-fill the dropdowns with the logged-in student's UDISE, class, division, and attendance number.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/StudentResultPrintPage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/StudentResultPrintPage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-11",
+        "summary": "Build the Teacher Manage page (admin-only). Include an 'Add New Teacher Login' button that opens a form with two fields: School UDISE Number and Teacher Mobile Number. On submit, save to the canister's TeacherLogin store. Display all teacher login records in a data table with Edit and Delete buttons. This page is only visible and accessible to the Admin role.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/TeacherManagePage.tsx",
+          "frontend/src/components/TeacherLoginFormModal.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/TeacherManagePage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-12",
+        "summary": "Apply a vibrant, colorful, mobile-first visual theme throughout the entire app. Use a gradient-rich color palette with warm and energetic accent colors (avoid blue/purple dominance). Use bold typography, card-based layouts, smooth transitions on sidebar collapse/expand, and colorful section headers. The login page should have a distinct illustrated or gradient hero area with role-selection cards. The dashboard sidebar must be visually distinct with colored icons. All data tables and forms must look clean and modern on mobile screens.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/index.css",
+          "frontend/tailwind.config.js",
+          "frontend/src/components/ColorfulCard.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/index.css",
+          "frontend/tailwind.config.js"
+        ]
+      },
+      {
+        "id": "REQ-2",
+        "summary": "Implement a three-role authentication system on the frontend. Admin login uses username 'admin' and password 'admin'. Teacher login uses a mobile number that is validated against TeacherLogin records stored in the canister. Student login uses UDISE number + class + division + attendance number validated against Student records in the canister. Store the authenticated session (role, identity fields) in React state. Provide a logout button accessible from all pages.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/contexts/AuthContext.tsx",
+          "frontend/src/pages/LoginPage.tsx",
+          "frontend/src/components/LogoutButton.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/contexts/AuthContext.tsx",
+          "frontend/src/pages/LoginPage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-3",
+        "summary": "Build a collapsible (folding) sidebar navigation dashboard visible after login. The sidebar contains 8 menu items: Home, School Info (शाळा माहिती), Teacher Info (शिक्षक माहिती), Student Info (विद्यार्थी माहिती), Enter Result (निकाल भरा), Progress Report (प्रगती पत्रक), Student Result Print (विद्यार्थी निकाल Print), Teacher Manage. Apply role-based visibility: Admin sees all 8 pages; Teacher sees Home, School Info, Teacher Info, Student Info, Enter Result, Progress Report, Student Result Print; Student sees only Student Result Print. The sidebar must be collapsible to icons-only on mobile.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/Sidebar.tsx",
+          "frontend/src/layouts/DashboardLayout.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/layouts/DashboardLayout.tsx"
+        ]
+      },
+      {
+        "id": "REQ-4",
+        "summary": "Build the Home page with three colored summary stat cards. Card 1: Total Students for the school (filtered by logged-in teacher's UDISE or all schools for admin). Card 2: Students with results entered. Card 3: Students without results entered. Each card must have a distinct background color and show a count. Admin sees stats across all schools; teacher sees stats for their school's UDISE.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/HomePage.tsx",
+          "frontend/src/hooks/useStudentStats.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/HomePage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-5",
+        "summary": "Build the School Info page. Include an 'Add New School' button that opens a modal/form with fields: UDISE Number, School Name, Taluka, District, Year, Class. On submit, save the record to the canister. Display all saved school records in a data table with Edit and Delete action buttons in each row. Edit pre-fills the form; Delete removes the record after confirmation.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/SchoolInfoPage.tsx",
+          "frontend/src/components/SchoolFormModal.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/SchoolInfoPage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-6",
+        "summary": "Build the Teacher Info page. Include an 'Add New Teacher' button that opens a modal/form with fields: Teacher Name, Date of Birth, Class, Division, Mobile Number, School UDISE Number, School Name (auto-filled from UDISE), Taluka (auto-filled from UDISE), District (auto-filled from UDISE). When the user enters a UDISE number, automatically populate School Name, Taluka, and District from the saved school records. On submit, save to the canister. Display all teachers in a data table with Edit and Delete buttons.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/TeacherInfoPage.tsx",
+          "frontend/src/components/TeacherFormModal.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/TeacherInfoPage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-7",
+        "summary": "Build the Student Info page. Include an 'Add New Student' button that opens a modal/form with fields: UDISE Number, Teacher Name (dropdown populated from teacher records filtered by UDISE), Class (auto-filled from selected teacher), Division (auto-filled from selected teacher), Student Name, Attendance Number, Date of Birth, Mother's Name, School Name (auto from UDISE), Taluka (auto from UDISE), District (auto from UDISE). On submit, save to the canister. Display all students in a data table with Edit and Delete buttons.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/StudentInfoPage.tsx",
+          "frontend/src/components/StudentFormModal.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/StudentInfoPage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-8",
+        "summary": "Build the Enter Result (निकाल भरा) page. Include a UDISE dropdown to select a school; upon selection auto-populate a student dropdown. Selecting a student auto-fills Student Name, Class, Division. The form has two sections: Semester 1 (प्रथम सत्र) and Semester 2 (द्वितीय सत्र). Each section contains: 9 subject rows (Bhasha/भाषा, Hindi/हिंदी, English/इंग्रजी, Maths/गणित, Parisar Abhyas 1/परिसर अभ्यास भाग1, Parisar Abhyas 2/परिसर अभ्यास भाग2, Art/कला, Work Experience/कार्यानुभव, Physical Education/शारीरिक शिक्षण) each with a Grade dropdown (options: अ1, अ2, ब1, ब2, क1, क2, ड, इ1, ई2), plus text fields for Special Progress (विशेष प्रगती), Hobby/Interest (आवड/छंद), and Needs Improvement (सुधारणा आवश्यक). Submit saves to canister. Display saved results in a data table with Edit and Delete buttons.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/EnterResultPage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/EnterResultPage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-9",
+        "summary": "Build the Progress Report (प्रगती पत्रक) page. Provide four dropdowns: UDISE Number, Class (इयत्ता), Division (तुकडी), Attendance Number (हजेरी नंबर). A 'Search Progress Report' button fetches and displays a formatted progress report card showing: full school information, full student information, Semester 1 results (all 9 subjects with grades, special progress, hobby, needs improvement), and Semester 2 results in the same format. Include a Print button (triggers browser print) and a Download button (downloads the report as a printable HTML or PDF view).",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/ProgressReportPage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/ProgressReportPage.tsx"
+        ]
+      }
+    ]
+  },
+  "changedFiles": [
+    "backend/authorization/MixinAuthorization.mo",
+    "backend/authorization/access-control.mo",
+    "backend/main.mo",
+    "build-request.json",
+    "build-template/Dockerfile",
+    "build-template/LICENSE",
+    "build-template/README.md",
+    "build-template/deploy.sh",
+    "build-template/icp.yaml",
+    "build-template/package.json",
+    "build-template/pnpm-lock.yaml",
+    "build-template/pnpm-workspace.yaml",
+    "build-template/scripts/prune-unused-images.js",
+    "build-template/scripts/resize-images.js",
+    "build-template/src/backend/canister.yaml",
+    "build-template/src/backend/system-idl/aaaaa-aa.did",
+    "build-template/src/frontend/canister.yaml",
+    "build-template/src/frontend/components.json",
+    "build-template/src/frontend/env.json",
+    "build-template/src/frontend/eslint-rules/no-bigint-in-query-keys.js",
+    "build-template/src/frontend/eslint-rules/require-internet-identity-provider.js",
+    "build-template/src/frontend/eslint.config.js",
+    "build-template/src/frontend/package.json",
+    "build-template/src/frontend/postcss.config.js",
+    "build-template/src/frontend/src/components/ui/accordion.tsx",
+    "build-template/src/frontend/src/components/ui/alert-dialog.tsx",
+    "build-template/src/frontend/src/components/ui/alert.tsx",
+    "build-template/src/frontend/src/components/ui/aspect-ratio.tsx",
+    "build-template/src/frontend/src/components/ui/avatar.tsx",
+    "build-template/src/frontend/src/components/ui/badge.tsx",
+    "build-template/src/frontend/src/components/ui/breadcrumb.tsx",
+    "build-template/src/frontend/src/components/ui/button.tsx",
+    "build-template/src/frontend/src/components/ui/calendar.tsx",
+    "build-template/src/frontend/src/components/ui/card.tsx",
+    "build-template/src/frontend/src/components/ui/carousel.tsx",
+    "build-template/src/frontend/src/components/ui/chart.tsx",
+    "build-template/src/frontend/src/components/ui/checkbox.tsx",
+    "build-template/src/frontend/src/components/ui/collapsible.tsx",
+    "build-template/src/frontend/src/components/ui/command.tsx",
+    "build-template/src/frontend/src/components/ui/context-menu.tsx",
+    "build-template/src/frontend/src/components/ui/dialog.tsx",
+    "build-template/src/frontend/src/components/ui/drawer.tsx",
+    "build-template/src/frontend/src/components/ui/dropdown-menu.tsx",
+    "build-template/src/frontend/src/components/ui/form.tsx",
+    "build-template/src/frontend/src/components/ui/hover-card.tsx",
+    "build-template/src/frontend/src/components/ui/input-otp.tsx",
+    "build-template/src/frontend/src/components/ui/input.tsx",
+    "build-template/src/frontend/src/components/ui/label.tsx",
+    "build-template/src/frontend/src/components/ui/menubar.tsx",
+    "build-template/src/frontend/src/components/ui/navigation-menu.tsx",
+    "build-template/src/frontend/src/components/ui/pagination.tsx",
+    "build-template/src/frontend/src/components/ui/popover.tsx",
+    "build-template/src/frontend/src/components/ui/progress.tsx",
+    "build-template/src/frontend/src/components/ui/radio-group.tsx",
+    "build-template/src/frontend/src/components/ui/resizable.tsx",
+    "build-template/src/frontend/src/components/ui/scroll-area.tsx",
+    "build-template/src/frontend/src/components/ui/select.tsx",
+    "build-template/src/frontend/src/components/ui/separator.tsx",
+    "build-template/src/frontend/src/components/ui/sheet.tsx",
+    "build-template/src/frontend/src/components/ui/sidebar.tsx",
+    "build-template/src/frontend/src/components/ui/skeleton.tsx",
+    "build-template/src/frontend/src/components/ui/slider.tsx",
+    "build-template/src/frontend/src/components/ui/sonner.tsx",
+    "build-template/src/frontend/src/components/ui/switch.tsx",
+    "build-template/src/frontend/src/components/ui/table.tsx",
+    "build-template/src/frontend/src/components/ui/tabs.tsx",
+    "build-template/src/frontend/src/components/ui/textarea.tsx",
+    "build-template/src/frontend/src/components/ui/toggle-group.tsx",
+    "build-template/src/frontend/src/components/ui/toggle.tsx",
+    "build-template/src/frontend/src/components/ui/tooltip.tsx",
+    "build-template/src/frontend/src/hooks/use-mobile.tsx",
+    "build-template/src/frontend/src/lib/utils.ts",
+    "build-template/src/frontend/tsconfig.json",
+    "build-template/src/frontend/vite.config.js",
+    "build-template/tsconfig.json",
+    "caffeine.lock.json",
+    "feature_evidence.json",
+    "frontend-file-summaries.txt",
+    "frontend-implementation-plan.json",
+    "frontend/index.css",
+    "frontend/index.html",
+    "frontend/public/assets/generated/app-logo.dim_256x256.png",
+    "frontend/public/assets/generated/login-bg.dim_1080x1920.png",
+    "frontend/src/App.tsx",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/components/ReportCard.tsx",
+    "frontend/src/config.ts",
+    "frontend/src/contexts/AuthContext.tsx",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
+    "frontend/src/hooks/useActor.ts",
+    "frontend/src/hooks/useInternetIdentity.ts",
+    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/index.css",
+    "frontend/src/layouts/DashboardLayout.tsx",
+    "frontend/src/lib/localStorage.ts",
+    "frontend/src/main.tsx",
+    "frontend/src/pages/EnterResultPage.tsx",
+    "frontend/src/pages/HomePage.tsx",
+    "frontend/src/pages/LoginPage.tsx",
+    "frontend/src/pages/ProgressReportPage.tsx",
+    "frontend/src/pages/SchoolInfoPage.tsx",
+    "frontend/src/pages/StudentInfoPage.tsx",
+    "frontend/src/pages/StudentResultPrintPage.tsx",
+    "frontend/src/pages/TeacherInfoPage.tsx",
+    "frontend/src/pages/TeacherManagePage.tsx",
+    "frontend/src/ui-summary.json",
+    "frontend/src/utils/StorageClient.ts",
+    "frontend/src/utils/urlParams.ts",
+    "frontend/tailwind.config.js",
+    "project_state.json",
+    "scratch/component-selection.json",
+    "spec.md",
+    "spec_vs_diff_report.json"
+  ]
+}

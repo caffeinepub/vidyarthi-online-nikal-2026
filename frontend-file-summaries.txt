@@ -1,0 +1,6 @@
+{
+  "frontend/src/App.tsx": "Root application component that wraps everything in AuthProvider, conditionally renders LoginPage or DashboardLayout with the appropriate page based on auth session and role, and handles role-based navigation guards.",
+  "frontend/src/pages/ProgressReportPage.tsx": "Progress Report page with four cascading dropdowns (UDISE, class, division, attendance number) to search for a student's full report card, displaying school info, student info, and both semester results with Print and HTML Download buttons.",
+  "frontend/src/pages/StudentResultPrintPage.tsx": "Student Result Print page identical to ProgressReportPage but accessible to all roles; auto-pre-fills and auto-searches for student role using their session credentials, with Print and Download functionality.",
+  "frontend/src/pages/TeacherManagePage.tsx": "Admin-only Teacher Manage page for adding, editing, and deleting teacher login credentials (UDISE + mobile number pairs) stored in localStorage, displayed in a data table with action buttons."
+}
