@@ -1,305 +1,194 @@
 {
   "kind": "build_request",
-  "title": "Vidyarthi Online Nikal 2026 - Full Student Result Management App",
-  "projectName": "Vidyarthi Nikal 2026",
-  "priority": "normal",
+  "title": "Teacher Login via Mobile + U-DISE and U-DISE-Filtered Data Across All Pages",
+  "projectName": "Vidyarthi Nikal Portal",
+  "priority": "high",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Implement backend data models and CRUD operations in the Motoko actor for: School (UDISE number, school name, taluka, district, year, class), Teacher (name, DOB, class, division, mobile number, UDISE number), Student (UDISE number, teacher name, class, division, student name, attendance number, DOB, mother's name, school name, taluka, district), Result (student ID, semester 1 grades for 9 subjects, special progress, hobby, improvement notes; same fields for semester 2), and TeacherLogin (UDISE number, mobile number). Expose query and update functions for add, edit, delete, and fetch for each entity. All data must be stored in stable variables in the canister for lifetime persistence and cross-device sync.",
-      "target": "backend",
+      "text": "Implement teacher login using mobile number and U-DISE number as credentials. On the Login page, the Teacher tab must accept both a mobile number field and a U-DISE number field. Authentication must validate the combination against stored teacher login records (TeacherLogin entries in localStorage). On successful login, store the teacher's U-DISE number in the auth session so all subsequent pages can access it.",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-2"
+          "msg-6"
         ],
         "quotes": [
-          "सर्व data सर्व devices वर data sync करा canister-based storage add करा. हे app लाईफ time वापरता येईल असे बनवा."
+          "शिक्षक लॉगिन हे मोबाइल नंबर आणि यु डायस नंबर ने व्हावे"
         ]
       },
       "acceptanceCriteria": [
-        "School records can be created, read, updated, and deleted via canister calls",
-        "Teacher records can be created, read, updated, and deleted via canister calls",
-        "Student records can be created, read, updated, and deleted via canister calls",
-        "Result records (semester 1 & 2) can be created, read, updated, and deleted per student",
-        "TeacherLogin records (UDISE + mobile) can be created, read, updated, and deleted",
-        "All data persists across canister upgrades using stable variables",
-        "Backend exposes query functions to get stats: total students by UDISE, students with results, students without results"
+        "Teacher tab on LoginPage shows both a 'Mobile Number' field and a 'U-DISE Number' field.",
+        "Login succeeds only when the mobile number and U-DISE number match a stored TeacherLogin record.",
+        "On successful teacher login, the session stores the teacher's U-DISE number.",
+        "Invalid combinations show a clear error message.",
+        "After login, the teacher is routed to the Home page dashboard."
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Implement a three-role authentication system on the frontend. Admin login uses username 'admin' and password 'admin'. Teacher login uses a mobile number that is validated against TeacherLogin records stored in the canister. Student login uses UDISE number + class + division + attendance number validated against Student records in the canister. Store the authenticated session (role, identity fields) in React state. Provide a logout button accessible from all pages.",
-      "target": "both",
+      "text": "On the Home page (HomePage.tsx), when a teacher is logged in, display stats (total students, results entered, results pending) and the progress bar filtered exclusively to the logged-in teacher's U-DISE number. Admins continue to see data for all schools.",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-2"
+          "msg-6"
         ],
         "quotes": [
-          "Admin login Username - admin Password - admin",
-          "Teacher login मोबाईल नंबर ने लॉगिन होईल",
-          "Student login निकाल - यु डायस नंबर इयत्ता तुकडी हजेरी नंबर"
+          "त्याच यु डायस नंबर ची माहिती Home page"
         ]
       },
       "acceptanceCriteria": [
-        "Admin can log in with username 'admin' and password 'admin'",
-        "Teacher can log in with a mobile number registered in TeacherLogin records",
-        "Student can log in with UDISE number + class + division + attendance number matching a student record",
-        "Invalid credentials show an error message",
-        "Logout clears the session and redirects to the login page",
-        "The login page has a stylish, colorful design with role-selection tabs or cards"
+        "Teacher role sees only counts and stats for students/results belonging to their U-DISE number.",
+        "Admin role continues to see aggregated data across all schools.",
+        "The filtering uses the U-DISE from the teacher's auth session."
       ]
     },
     {
       "id": "REQ-3",
-      "text": "Build a collapsible (folding) sidebar navigation dashboard visible after login. The sidebar contains 8 menu items: Home, School Info (शाळा माहिती), Teacher Info (शिक्षक माहिती), Student Info (विद्यार्थी माहिती), Enter Result (निकाल भरा), Progress Report (प्रगती पत्रक), Student Result Print (विद्यार्थी निकाल Print), Teacher Manage. Apply role-based visibility: Admin sees all 8 pages; Teacher sees Home, School Info, Teacher Info, Student Info, Enter Result, Progress Report, Student Result Print; Student sees only Student Result Print. The sidebar must be collapsible to icons-only on mobile.",
+      "text": "On the School Info page (SchoolInfoPage.tsx), when a teacher is logged in, show only the school record matching the teacher's U-DISE number. Add and edit actions should be hidden or disabled for teacher role; only admins can add/edit/delete school records. Admins see all schools.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-2"
+          "msg-6"
         ],
         "quotes": [
-          "फोल्डिंग Dashboard",
-          "Home page - (admin,teacher)",
-          "teacher mange page (admin)"
+          "शाळा माहिती page"
         ]
       },
       "acceptanceCriteria": [
-        "Sidebar collapses to icon-only mode and expands to full labels",
-        "Admin can see and access all 8 menu pages",
-        "Teacher sees 7 pages (all except Teacher Manage)",
-        "Student sees only Student Result Print page",
-        "Active menu item is visually highlighted",
-        "Sidebar is mobile-responsive"
+        "Teacher role sees only the single school row whose UDISE matches their session U-DISE.",
+        "Add/Edit/Delete buttons are hidden for teacher role on this page.",
+        "Admin role sees all schools with full CRUD controls."
       ]
     },
     {
       "id": "REQ-4",
-      "text": "Build the Home page with three colored summary stat cards. Card 1: Total Students for the school (filtered by logged-in teacher's UDISE or all schools for admin). Card 2: Students with results entered. Card 3: Students without results entered. Each card must have a distinct background color and show a count. Admin sees stats across all schools; teacher sees stats for their school's UDISE.",
+      "text": "On the Teacher Info page (TeacherInfoPage.tsx), when a teacher is logged in, show only teacher records whose U-DISE number matches the logged-in teacher's U-DISE. Admins see all teacher records.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-2"
+          "msg-6"
         ],
         "quotes": [
-          "एकूण विद्यार्थी",
-          "एकूण विद्यार्थी मार्क भरलेले",
-          "एकूण विद्यार्थी मार्क नभरलेले",
-          "अशी रंगीत कार्ड तयार करा"
+          "शिक्षक माहिती page"
         ]
       },
       "acceptanceCriteria": [
-        "Three colored stat cards are displayed on the Home page",
-        "Card 1 shows total student count",
-        "Card 2 shows count of students with at least one result record",
-        "Card 3 shows count of students with no result records",
-        "Stats reflect real-time data from the canister"
+        "Teacher role sees only teacher entries with their own U-DISE number.",
+        "Admin role sees all teacher records.",
+        "The UDISE filter is applied automatically on page load from the session."
       ]
     },
     {
       "id": "REQ-5",
-      "text": "Build the School Info page. Include an 'Add New School' button that opens a modal/form with fields: UDISE Number, School Name, Taluka, District, Year, Class. On submit, save the record to the canister. Display all saved school records in a data table with Edit and Delete action buttons in each row. Edit pre-fills the form; Delete removes the record after confirmation.",
-      "target": "both",
+      "text": "On the Student Info page (StudentInfoPage.tsx), when a teacher is logged in, display only students whose school U-DISE matches the logged-in teacher's U-DISE. The UDISE field in the add/edit form should be pre-filled and locked to the teacher's U-DISE. Admins see all students.",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-2"
+          "msg-6"
         ],
         "quotes": [
-          "नवीन शाळा button वर क्लिक केल्यावर शाळा माहिती फॉर्म open होईल",
-          "शाळेचा युडायस नंबर, शाळेचे नाव, तालुका, जिल्हा, वर्ष, इयत्ता"
+          "विद्यार्थी माहिती page"
         ]
       },
       "acceptanceCriteria": [
-        "Clicking 'Add New School' opens a form modal",
-        "Form has all 6 fields: UDISE Number, School Name, Taluka, District, Year, Class",
-        "Submitting saves the record and it appears in the data table immediately",
-        "Each row has small Edit and Delete buttons",
-        "Edit opens the form pre-filled with the row's data",
-        "Delete removes the record after a confirmation prompt"
+        "Teacher role sees only students belonging to their U-DISE school.",
+        "When a teacher adds a student, the U-DISE field is pre-populated and read-only.",
+        "Admin role sees and can manage all students."
       ]
     },
     {
       "id": "REQ-6",
-      "text": "Build the Teacher Info page. Include an 'Add New Teacher' button that opens a modal/form with fields: Teacher Name, Date of Birth, Class, Division, Mobile Number, School UDISE Number, School Name (auto-filled from UDISE), Taluka (auto-filled from UDISE), District (auto-filled from UDISE). When the user enters a UDISE number, automatically populate School Name, Taluka, and District from the saved school records. On submit, save to the canister. Display all teachers in a data table with Edit and Delete buttons.",
-      "target": "both",
+      "text": "On the Enter Results page (EnterResultPage.tsx), when a teacher is logged in, the student list must be filtered to show only students from the teacher's U-DISE school. Admins can see students from all schools.",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-2"
+          "msg-6"
         ],
         "quotes": [
-          "शिक्षक नाव, जन्म दिनांक, इयत्ता, तुकडी, मोबाईल नंबर, शाळेचा युडायस नंबर",
-          "शाळेचे नाव (शाळेचा युडायस नंबर वरून ऑटोमॅटिक घ्या)"
+          "निकाल भरा page"
         ]
       },
       "acceptanceCriteria": [
-        "Clicking 'Add New Teacher' opens a form modal",
-        "Entering a UDISE number auto-fills School Name, Taluka, and District",
-        "Form has all 9 fields",
-        "Saved teacher appears in the data table",
-        "Edit and Delete buttons work correctly per row"
+        "Teacher role's student search list is scoped to their U-DISE.",
+        "Admin role sees all students in the list.",
+        "Results entered by a teacher are correctly associated with their school's U-DISE."
       ]
     },
     {
       "id": "REQ-7",
-      "text": "Build the Student Info page. Include an 'Add New Student' button that opens a modal/form with fields: UDISE Number, Teacher Name (dropdown populated from teacher records filtered by UDISE), Class (auto-filled from selected teacher), Division (auto-filled from selected teacher), Student Name, Attendance Number, Date of Birth, Mother's Name, School Name (auto from UDISE), Taluka (auto from UDISE), District (auto from UDISE). On submit, save to the canister. Display all students in a data table with Edit and Delete buttons.",
-      "target": "both",
+      "text": "On the Progress Report page (ProgressReportPage.tsx), when a teacher is logged in, pre-fill and lock the U-DISE filter field to the teacher's U-DISE number so they can only view progress reports for their own school's students. Admins can enter any U-DISE.",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-2"
+          "msg-6"
         ],
         "quotes": [
-          "नवीन विद्यार्थी बटण घ्या",
-          "शिक्षक नाव (drop down)",
-          "इयत्ता (automatic शिक्षक नावावरून)",
-          "विद्यार्थी नाव, हजेरी नंबर, जन्म दिनांक, आईचे नाव"
+          "प्रगती पत्रक page"
         ]
       },
       "acceptanceCriteria": [
-        "Clicking 'Add New Student' opens a form modal",
-        "Teacher Name dropdown is populated from teacher records matching the entered UDISE",
-        "Selecting a teacher auto-fills Class and Division",
-        "Entering UDISE auto-fills School Name, Taluka, District",
-        "All 11 fields are present in the form",
-        "Submitted student appears in the data table with Edit and Delete buttons"
+        "U-DISE input on the Progress Report page is pre-filled with the teacher's U-DISE and is read-only for teacher role.",
+        "Admin role can freely type any U-DISE.",
+        "Progress report results are scoped correctly based on the U-DISE."
       ]
     },
     {
       "id": "REQ-8",
-      "text": "Build the Enter Result (निकाल भरा) page. Include a UDISE dropdown to select a school; upon selection auto-populate a student dropdown. Selecting a student auto-fills Student Name, Class, Division. The form has two sections: Semester 1 (प्रथम सत्र) and Semester 2 (द्वितीय सत्र). Each section contains: 9 subject rows (Bhasha/भाषा, Hindi/हिंदी, English/इंग्रजी, Maths/गणित, Parisar Abhyas 1/परिसर अभ्यास भाग1, Parisar Abhyas 2/परिसर अभ्यास भाग2, Art/कला, Work Experience/कार्यानुभव, Physical Education/शारीरिक शिक्षण) each with a Grade dropdown (options: अ1, अ2, ब1, ब2, क1, क2, ड, इ1, ई2), plus text fields for Special Progress (विशेष प्रगती), Hobby/Interest (आवड/छंद), and Needs Improvement (सुधारणा आवश्यक). Submit saves to canister. Display saved results in a data table with Edit and Delete buttons.",
-      "target": "both",
+      "text": "On the Student Result Print page (StudentResultPrintPage.tsx), when a teacher is logged in, pre-fill and lock the U-DISE filter to the teacher's U-DISE number so they can only search and print results for their school's students. Admins can enter any U-DISE.",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-2"
+          "msg-6"
         ],
         "quotes": [
-          "निकाल भरा page",
-          "प्रथम सत्र निकाल",
-          "द्वितीय सत्र निकाल",
-          "विषय नाव - भाषा, हिंदी, इंग्रजी, गणित",
-          "श्रेणी - अ1, अ2, ब1, ब2, क1, क2, ड, इ1, ई2"
+          "विद्यार्थी निकाल print"
         ]
       },
       "acceptanceCriteria": [
-        "UDISE dropdown filters students; student selection auto-fills Name, Class, Division",
-        "Semester 1 section has all 9 subject grade dropdowns with correct grade options",
-        "Semester 2 section has the same structure as Semester 1",
-        "Each semester section has Special Progress, Hobby, and Needs Improvement text fields",
-        "Submit saves the result record to the canister",
-        "Saved results appear in a data table with Edit and Delete buttons"
+        "U-DISE input on the Student Result Print page is pre-filled with the teacher's U-DISE and is read-only for teacher role.",
+        "Admin role can freely type any U-DISE.",
+        "Print output shows only data for the teacher's school."
       ]
     },
     {
       "id": "REQ-9",
-      "text": "Build the Progress Report (प्रगती पत्रक) page. Provide four dropdowns: UDISE Number, Class (इयत्ता), Division (तुकडी), Attendance Number (हजेरी नंबर). A 'Search Progress Report' button fetches and displays a formatted progress report card showing: full school information, full student information, Semester 1 results (all 9 subjects with grades, special progress, hobby, needs improvement), and Semester 2 results in the same format. Include a Print button (triggers browser print) and a Download button (downloads the report as a printable HTML or PDF view).",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ],
-        "quotes": [
-          "प्रगती पत्रक page - मध्ये यु डायस नंबर(drop डाउन), इयत्ता (drop डाउन), तुकडी(drop डाउन), हजेरी नंबर(drop डाउन)",
-          "शाळेची सर्व माहिती, विद्यार्थी सर्व माहिती व विद्यार्थी निकाल",
-          "प्रिंट काढता यावी",
-          "माहिती डाऊनलोड करता येईल"
-        ]
-      },
-      "acceptanceCriteria": [
-        "All four dropdowns are present and cascade correctly",
-        "Search button retrieves and displays the full formatted progress report",
-        "Report shows school info, student info, Semester 1 results, and Semester 2 results",
-        "Print button triggers the browser's print dialog with a clean print layout",
-        "Download button initiates a file download of the report"
-      ]
-    },
-    {
-      "id": "REQ-10",
-      "text": "Build the Student Result Print (विद्यार्थी निकाल Print) page. This page is identical in functionality to the Progress Report page: four dropdowns (UDISE, Class, Division, Attendance Number), a Search button, display of full school + student + semester 1 & semester 2 result information, a Print button, and a Download button. This page must be accessible to Admin, Teacher, and Student roles. For Student role, pre-fill the dropdowns with the logged-in student's UDISE, class, division, and attendance number.",
+      "text": "Ensure the sidebar navigation (DashboardLayout.tsx) for the teacher role includes links to all the following pages: Home, School Info, Teacher Info, Student Info, Enter Results, Progress Report, and Student Result Print — all visible and accessible to the teacher role.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-2"
+          "msg-6"
         ],
         "quotes": [
-          "विद्यार्थी निकाल print-(admin, teacher, student)",
-          "विद्यार्थी निकाल print मध्ये यु डायस नंबर, इयत्ता, तुकडी, हजेरी नंबर"
+          "Home page",
+          "शाळा माहिती page",
+          "शिक्षक माहिती page",
+          "विद्यार्थी माहिती page",
+          "निकाल भरा page",
+          "प्रगती पत्रक page",
+          "विद्यार्थी निकाल print"
         ]
       },
       "acceptanceCriteria": [
-        "Page is accessible to all three roles",
-        "For student login, dropdowns are pre-filled with the student's own credentials",
-        "Search retrieves and displays the full result report",
-        "Print and Download buttons work correctly",
-        "Student role cannot navigate to any other page from this view"
-      ]
-    },
-    {
-      "id": "REQ-11",
-      "text": "Build the Teacher Manage page (admin-only). Include an 'Add New Teacher Login' button that opens a form with two fields: School UDISE Number and Teacher Mobile Number. On submit, save to the canister's TeacherLogin store. Display all teacher login records in a data table with Edit and Delete buttons. This page is only visible and accessible to the Admin role.",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ],
-        "quotes": [
-          "teacher mange page (admin)",
-          "शाळेचा यु डायस नंबर, शिक्षक मोबाईल नंबर",
-          "data टेबल मध्ये दिसेल आणि तो एडिट आणि डिलीट करता येईल"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Page is visible only to admin role",
-        "Add New Teacher Login form has UDISE and Mobile Number fields",
-        "Submitted records appear in the data table",
-        "Edit and Delete buttons work per row",
-        "Teacher login mobile numbers saved here are used to authenticate teacher logins"
-      ]
-    },
-    {
-      "id": "REQ-12",
-      "text": "Apply a vibrant, colorful, mobile-first visual theme throughout the entire app. Use a gradient-rich color palette with warm and energetic accent colors (avoid blue/purple dominance). Use bold typography, card-based layouts, smooth transitions on sidebar collapse/expand, and colorful section headers. The login page should have a distinct illustrated or gradient hero area with role-selection cards. The dashboard sidebar must be visually distinct with colored icons. All data tables and forms must look clean and modern on mobile screens.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ],
-        "quotes": [
-          "स्टायलिश लूक आणि कलर फुल असावे"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Login page has a colorful hero area with clearly differentiated role-selection options",
-        "Dashboard sidebar has colored icons and smooth collapse animation",
-        "All pages use a consistent vibrant color palette",
-        "Data tables are readable and well-spaced on mobile",
-        "Forms use clear labels, proper spacing, and colored submit buttons",
-        "Overall design is mobile-responsive and works well on phone screen widths"
+        "Teacher role can see and navigate to: Home, School Info, Teacher Info, Student Info, Enter Results, Progress Report, and Student Result Print.",
+        "No page is blocked or hidden from the teacher role except admin-only management pages.",
+        "Navigation items correctly label pages in both English and Marathi where applicable."
       ]
     }
   ],
   "constraints": [
-    "Admin credentials are hardcoded: username = 'admin', password = 'admin'",
-    "Teacher authentication uses mobile number matched against TeacherLogin records in the canister",
-    "Student authentication uses UDISE + class + division + attendance number matched against Student records",
-    "All application data must be stored in the Motoko canister using stable variables for lifetime persistence",
-    "Student role can only access the Student Result Print page",
-    "Teacher Manage page is only accessible to Admin role",
-    "Do not use Internet Identity for authentication in this app",
-    "Grade options are exactly: अ1, अ2, ब1, ब2, क1, क2, ड, इ1, ई2",
-    "Subjects are exactly 9: भाषा, हिंदी, इंग्रजी, गणित, परिसर अभ्यास भाग1/सा. विज्ञान, परिसर अभ्यास भाग2/सा. शास्त्र, कला, कार्यानुभव, शारीरिक शिक्षण"
+    "All data filtering by U-DISE must use the U-DISE stored in the teacher's auth session — do not rely on URL parameters for security-sensitive filtering.",
+    "Admin role must retain full unfiltered access to all pages and data.",
+    "Do not modify files under frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, or frontend/src/components/ui.",
+    "All data storage continues to use localStorage helpers defined in frontend/src/lib/localStorage.ts."
   ],
   "nonGoals": [
-    "No Internet Identity or social login integration",
-    "No email or SMS notifications",
-    "No real-time WebSocket updates",
-    "No external database or cloud storage — only canister storage",
-    "No multi-canister or microservice architecture",
-    "No marks/numeric scoring — only grade categories (श्रेणी) are used",
-    "No student registration self-service — students are registered by admin/teacher only"
+    "No changes to the Student login tab or Student role behavior.",
+    "No backend (Motoko) changes required — all filtering is client-side using localStorage.",
+    "No new pages beyond those already listed.",
+    "No changes to the Admin login flow."
   ],
   "imageRequirements": {
-    "required": [
-      "Colorful school education themed app logo with a graduation cap and open book illustration, warm orange and green tones (app-logo.dim_256x256.png)",
-      "Vibrant gradient login page background with abstract school/education motifs like pencils, stars, and books in warm colors (login-bg.dim_1080x1920.png)"
-    ],
+    "required": [],
     "edits": []
   }
 }

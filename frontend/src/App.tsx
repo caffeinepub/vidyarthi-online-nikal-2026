@@ -22,8 +22,8 @@ function AppContent() {
   const handleNavigate = (page: PageKey) => {
     // Guard: students can only access student-result-print
     if (session?.role === 'student' && page !== 'student-result-print') return;
-    // Guard: teacher-manage is admin only
-    if (session?.role === 'teacher' && page === 'teacher-manage') return;
+    // Guard: teacher-manage is admin only — redirect non-admins away
+    if (session?.role !== 'admin' && page === 'teacher-manage') return;
     setCurrentPage(page);
   };
 
@@ -31,8 +31,14 @@ function AppContent() {
     return <LoginPage />;
   }
 
+  // If somehow a non-admin lands on teacher-manage, redirect to home
+  const safePage: PageKey =
+    currentPage === 'teacher-manage' && session?.role !== 'admin'
+      ? 'home'
+      : currentPage;
+
   const renderPage = () => {
-    switch (currentPage) {
+    switch (safePage) {
       case 'home': return <HomePage />;
       case 'school-info': return <SchoolInfoPage />;
       case 'teacher-info': return <TeacherInfoPage />;
@@ -46,7 +52,7 @@ function AppContent() {
   };
 
   return (
-    <DashboardLayout currentPage={currentPage} onNavigate={handleNavigate}>
+    <DashboardLayout currentPage={safePage} onNavigate={handleNavigate}>
       {renderPage()}
     </DashboardLayout>
   );

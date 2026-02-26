@@ -4,7 +4,7 @@ import { getTeacherLogins, getStudents } from '../lib/localStorage';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { GraduationCap, BookOpen, Users, Shield, Phone, Hash } from 'lucide-react';
+import { GraduationCap, BookOpen, Shield, Phone, Hash } from 'lucide-react';
 
 type LoginTab = 'admin' | 'teacher' | 'student';
 
@@ -264,6 +264,11 @@ export default function LoginPage() {
 
         <p className="text-center text-white/40 text-xs mt-6">
           सर्व डेटा सुरक्षित ठेवला जातो • Canister Storage
+        </p>
+
+        {/* Footer */}
+        <p className="text-center text-white/30 text-xs mt-3">
+          © 2026 विद्यार्थी ऑनलाईन निकाल 2026 • Built with vaibhavgavali
         </p>
       </div>
     </div>

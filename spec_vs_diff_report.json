@@ -1,115 +1,85 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-25T18:43:54.564Z",
-  "summary": "The diff implements a comprehensive student result management frontend app with all 8 pages, role-based auth, collapsible sidebar, and a Motoko backend. However, the critical requirement that all data must be stored in the Motoko canister using stable variables is violated: the frontend uses localStorage as the primary data store instead of canister calls. The backend data models also differ significantly from the spec (missing required fields like UDISE, DOB, taluka, district, etc.). Internet Identity is integrated despite being explicitly prohibited.",
+  "generatedAt": "2026-02-26T04:43:41.189Z",
+  "summary": "The diff only modifies project_state.json, which is a planning/state tracking file. No actual frontend source code changes are implemented. All 9 requirements remain unimplemented as the diff contains only a project state document describing pending feature requests, not any actual code changes to LoginPage, HomePage, SchoolInfoPage, TeacherInfoPage, StudentInfoPage, EnterResultPage, ProgressReportPage, StudentResultPrintPage, or DashboardLayout.",
   "missing_requirements": [
     {
       "id": "REQ-1",
-      "requirement": "Backend data models must include correct fields: School (UDISE, name, taluka, district, year, class), Teacher (name, DOB, class, division, mobile, UDISE), Student (UDISE, teacher name, class, division, student name, attendance number, DOB, mother's name, school name, taluka, district), Result (student ID, 9 subject grades for sem1 & sem2, special progress, hobby, improvement), TeacherLogin (UDISE, mobile). All data stored in stable variables.",
-      "reason": "The backend (main.mo) defines School with only (id, name, address, principal), Teacher with (id, name, subject, schoolId), Student with (id, name, schoolId), and Result with a generic Session structure. None of the required domain-specific fields are present and variables are not declared as stable.",
+      "requirement": "Implement teacher login using mobile number and U-DISE number as credentials on the Login page.",
+      "reason": "No changes to LoginPage.tsx or any authentication logic are present in the diff. Only project_state.json was modified.",
       "evidence": [
-        "backend/main.mo"
-      ]
-    },
-    {
-      "id": "REQ-1",
-      "requirement": "All data must be stored in stable variables in the canister for lifetime persistence and cross-device sync.",
-      "reason": "The frontend stores all application data in localStorage and never calls the canister for CRUD operations on School, Teacher, Student, Result, or TeacherLogin. The useQueries.ts hooks exclusively use localStorage helpers.",
-      "evidence": [
-        "frontend/src/lib/localStorage.ts",
-        "frontend/src/hooks/useQueries.ts"
-      ]
-    },
-    {
-      "id": "REQ-1",
-      "requirement": "Backend exposes query functions to get stats: total students by UDISE, students with results, students without results.",
-      "reason": "No such stat query functions are present in the backend. Stats are computed entirely from localStorage on the frontend.",
-      "evidence": [
-        "backend/main.mo",
-        "frontend/src/pages/HomePage.tsx"
+        "project_state.json"
       ]
     },
     {
       "id": "REQ-2",
-      "requirement": "Teacher login uses a mobile number validated against TeacherLogin records stored in the canister.",
-      "reason": "Teacher login validates against localStorage TeacherLogin records via getTeacherLogins(), not canister records.",
+      "requirement": "On the Home page, filter stats and progress bar by the logged-in teacher's U-DISE number.",
+      "reason": "No changes to HomePage.tsx are present in the diff.",
       "evidence": [
-        "frontend/src/pages/LoginPage.tsx",
-        "frontend/src/lib/localStorage.ts"
+        "project_state.json"
       ]
     },
     {
-      "id": "REQ-2",
-      "requirement": "Student login uses UDISE + class + division + attendance number validated against Student records in the canister.",
-      "reason": "Student login validates against localStorage student records via getStudents(), not canister records.",
+      "id": "REQ-3",
+      "requirement": "On the School Info page, show only the school matching the teacher's U-DISE and hide Add/Edit/Delete for teacher role.",
+      "reason": "No changes to SchoolInfoPage.tsx are present in the diff.",
       "evidence": [
-        "frontend/src/pages/LoginPage.tsx",
-        "frontend/src/lib/localStorage.ts"
+        "project_state.json"
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "requirement": "On the Teacher Info page, show only teacher records matching the logged-in teacher's U-DISE.",
+      "reason": "No changes to TeacherInfoPage.tsx are present in the diff.",
+      "evidence": [
+        "project_state.json"
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "requirement": "On the Student Info page, filter students by teacher's U-DISE and pre-fill/lock the UDISE field in forms.",
+      "reason": "No changes to StudentInfoPage.tsx are present in the diff.",
+      "evidence": [
+        "project_state.json"
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "requirement": "On the Enter Results page, filter student list to teacher's U-DISE school.",
+      "reason": "No changes to EnterResultPage.tsx are present in the diff.",
+      "evidence": [
+        "project_state.json"
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "requirement": "On the Progress Report page, pre-fill and lock the U-DISE filter to the teacher's U-DISE.",
+      "reason": "No changes to ProgressReportPage.tsx are present in the diff.",
+      "evidence": [
+        "project_state.json"
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "requirement": "On the Student Result Print page, pre-fill and lock the U-DISE filter to the teacher's U-DISE.",
+      "reason": "No changes to StudentResultPrintPage.tsx are present in the diff.",
+      "evidence": [
+        "project_state.json"
+      ]
+    },
+    {
+      "id": "REQ-9",
+      "requirement": "Ensure sidebar navigation in DashboardLayout.tsx includes all required pages for teacher role.",
+      "reason": "No changes to DashboardLayout.tsx are present in the diff.",
+      "evidence": [
+        "project_state.json"
       ]
     }
   ],
-  "hallucinated_features": [
-    {
-      "description": "Internet Identity integration is included via useInternetIdentity hook, InternetIdentityProvider, and useActor with identity-based actor creation.",
-      "reason": "The build request explicitly states 'Do not use Internet Identity for authentication in this app' and lists 'No Internet Identity or social login integration' as a non-goal.",
-      "evidence": [
-        "frontend/src/hooks/useInternetIdentity.ts",
-        "frontend/src/hooks/useActor.ts",
-        "frontend/src/main.tsx"
-      ]
-    },
-    {
-      "description": "Backend uses an authorization/access control system (MixinAuthorization, AccessControl) with admin tokens and Principal-based permissions.",
-      "reason": "The spec requires hardcoded admin credentials on the frontend and mobile/UDISE-based auth. No Principal-based access control or admin token system was requested.",
-      "evidence": [
-        "backend/main.mo"
-      ]
-    },
-    {
-      "description": "Backend includes a UserProfile entity stored per Principal with getCallerUserProfile, getUserProfile, saveCallerUserProfile functions.",
-      "reason": "No UserProfile entity or Principal-linked profile was requested in the spec.",
-      "evidence": [
-        "backend/main.mo"
-      ]
-    },
-    {
-      "description": "localStorage is used as the primary persistent data store for all app entities instead of the canister.",
-      "reason": "The spec mandates all application data be stored in the Motoko canister using stable variables and explicitly states no external database or cloud storage.",
-      "evidence": [
-        "frontend/src/lib/localStorage.ts",
-        "frontend/src/hooks/useQueries.ts"
-      ]
-    }
-  ],
-  "confidence": 0.88,
+  "hallucinated_features": [],
+  "confidence": 0.97,
   "changed_files": [
-    "all_files_summary.json",
-    "backend/main.mo",
-    "frontend-file-summaries.txt",
-    "frontend/index.css",
-    "frontend/index.html",
-    "frontend/src/App.tsx",
-    "frontend/src/components/ReportCard.tsx",
-    "frontend/src/contexts/AuthContext.tsx",
-    "frontend/src/hooks/useActor.ts",
-    "frontend/src/hooks/useInternetIdentity.ts",
-    "frontend/src/hooks/useQueries.ts",
-    "frontend/src/index.css",
-    "frontend/src/layouts/DashboardLayout.tsx",
-    "frontend/src/lib/localStorage.ts",
-    "frontend/src/main.tsx",
-    "frontend/src/pages/EnterResultPage.tsx",
-    "frontend/src/pages/HomePage.tsx",
-    "frontend/src/pages/LoginPage.tsx",
-    "frontend/src/pages/ProgressReportPage.tsx",
-    "frontend/src/pages/SchoolInfoPage.tsx",
-    "frontend/src/pages/StudentInfoPage.tsx",
-    "frontend/src/pages/StudentResultPrintPage.tsx",
-    "frontend/src/pages/TeacherInfoPage.tsx",
-    "frontend/src/pages/TeacherManagePage.tsx",
-    "frontend/src/utils/urlParams.ts",
-    "frontend/tailwind.config.js",
     "project_state.json"
   ]
 }

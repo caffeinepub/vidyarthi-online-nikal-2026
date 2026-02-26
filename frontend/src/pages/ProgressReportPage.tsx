@@ -86,6 +86,7 @@ export default function ProgressReportPage() {
     .signatures { display: flex; justify-content: space-between; margin-top: 24px; padding-top: 16px; border-top: 1px solid #ccc; }
     .sig-box { text-align: center; }
     .sig-line { border-bottom: 1px solid #666; width: 120px; height: 30px; margin-bottom: 4px; }
+    .footer { text-align: center; margin-top: 20px; font-size: 12px; color: #666; }
   </style>
 </head>
 <body>
@@ -134,6 +135,7 @@ export default function ProgressReportPage() {
     <div class="sig-box"><div class="sig-line"></div><p>वर्ग शिक्षक</p></div>
     <div class="sig-box"><div class="sig-line"></div><p>मुख्याध्यापक</p></div>
   </div>
+  <div class="footer">© 2026 विद्यार्थी ऑनलाईन निकाल 2026 • Built with vaibhavgavali</div>
 </body>
 </html>`;
     const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
@@ -254,16 +256,7 @@ export default function ProgressReportPage() {
 
       {/* Footer */}
       <footer className="text-center text-xs text-muted-foreground pt-4 pb-2 no-print">
-        <p>© {new Date().getFullYear()} विद्यार्थी ऑनलाईन निकाल 2026 • Built with ❤️ using{' '}
-          <a
-            href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname || 'vidyarthi-nikal-2026')}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-primary hover:underline"
-          >
-            caffeine.ai
-          </a>
-        </p>
+        <p>© 2026 विद्यार्थी ऑनलाईन निकाल 2026 • Built with vaibhavgavali</p>
       </footer>
     </div>
   );

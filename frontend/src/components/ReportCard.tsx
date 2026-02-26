@@ -94,6 +94,13 @@ export default function ReportCard({ school, student, result }: ReportCardProps)
           <p className="devanagari">मुख्याध्यापक</p>
         </div>
       </div>
+
+      {/* Print Footer */}
+      <div className="mt-4 pt-3 border-t border-gray-200 text-center">
+        <p className="text-xs text-gray-400 devanagari">
+          © 2026 विद्यार्थी ऑनलाईन निकाल 2026 • Built with vaibhavgavali
+        </p>
+      </div>
     </div>
   );
 }

@@ -117,13 +117,18 @@ export default function DashboardLayout({ currentPage, onNavigate, children }: P
       {/* Footer */}
       <div className="p-3 border-t border-white/10">
         {!collapsed && (
-          <button
-            onClick={logout}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-400 hover:bg-red-500/10 transition-all duration-150"
-          >
-            <LogOut size={18} />
-            <span>Logout</span>
-          </button>
+          <>
+            <button
+              onClick={logout}
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-400 hover:bg-red-500/10 transition-all duration-150"
+            >
+              <LogOut size={18} />
+              <span>Logout</span>
+            </button>
+            <p className="text-center text-white/30 text-xs mt-2 px-1 leading-relaxed">
+              © 2026 विद्यार्थी ऑनलाईन निकाल 2026 • Built with vaibhavgavali
+            </p>
+          </>
         )}
         {collapsed && (
           <button

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useStudents, useResults, useAddResult, useUpdateResult, useDeleteResult, useSchools } from '../hooks/useQueries';
-import { ResultExtra, StudentExtra, SchoolExtra, SubjectGrade, SemesterResult } from '../lib/localStorage';
+import { ResultExtra, StudentExtra, SchoolExtra, SemesterResult } from '../lib/localStorage';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,7 +8,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Textarea } from '@/components/ui/textarea';
 import { Plus, Pencil, Trash2, ClipboardList } from 'lucide-react';
 
 const SUBJECTS = [
@@ -48,6 +47,81 @@ interface FormState {
   semester1: SemesterResult;
   semester2: SemesterResult;
 }
+
+// ─── SemesterSection defined OUTSIDE the parent component ───────────────────
+// This is critical: defining it inside EnterResultPage would cause React to
+// treat it as a new component type on every render, unmounting/remounting the
+// textareas and stealing keyboard focus on mobile devices.
+interface SemesterSectionProps {
+  sem: 'semester1' | 'semester2';
+  label: string;
+  semData: SemesterResult;
+  onGradeChange: (subjectIdx: number, grade: string) => void;
+  onFieldChange: (field: 'specialProgress' | 'hobby' | 'improvement', value: string) => void;
+}
+
+const textareaClass =
+  'devanagari text-sm resize-none w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 min-h-[70px]';
+
+function SemesterSection({ sem, label, semData, onGradeChange, onFieldChange }: SemesterSectionProps) {
+  return (
+    <div className="space-y-3">
+      <div className={`p-3 rounded-xl text-white font-bold devanagari text-center ${sem === 'semester1' ? 'gradient-orange' : 'gradient-green'}`}>
+        {label}
+      </div>
+      <div className="space-y-2">
+        {semData.subjects.map((subj, idx) => (
+          <div key={idx} className="flex items-center gap-2">
+            <span className="flex-1 text-sm devanagari text-foreground">{subj.subject}</span>
+            <Select value={subj.grade} onValueChange={v => onGradeChange(idx, v)}>
+              <SelectTrigger className="w-24 h-8 text-sm">
+                <SelectValue placeholder="श्रेणी" />
+              </SelectTrigger>
+              <SelectContent>
+                {GRADES.map(g => (
+                  <SelectItem key={g} value={g} className="devanagari">{g}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        ))}
+      </div>
+      <div className="space-y-3 pt-2">
+        <div>
+          <Label className="devanagari text-xs font-semibold mb-1 block">✨ विशेष प्रगती</Label>
+          <textarea
+            value={semData.specialProgress}
+            onChange={e => onFieldChange('specialProgress', e.target.value)}
+            placeholder="विशेष प्रगती येथे लिहा..."
+            rows={2}
+            className={textareaClass}
+          />
+        </div>
+        <div>
+          <Label className="devanagari text-xs font-semibold mb-1 block">🎨 आवड/छंद</Label>
+          <textarea
+            value={semData.hobby}
+            onChange={e => onFieldChange('hobby', e.target.value)}
+            placeholder="आवड/छंद येथे लिहा..."
+            rows={2}
+            className={textareaClass}
+          />
+        </div>
+        <div>
+          <Label className="devanagari text-xs font-semibold mb-1 block">📝 सुधारणा आवश्यक</Label>
+          <textarea
+            value={semData.improvement}
+            onChange={e => onFieldChange('improvement', e.target.value)}
+            placeholder="सुधारणा आवश्यक येथे लिहा..."
+            rows={2}
+            className={textareaClass}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+// ─────────────────────────────────────────────────────────────────────────────
 
 export default function EnterResultPage() {
   const { data: students = [] } = useStudents();
@@ -146,60 +220,6 @@ export default function EnterResultPage() {
       setDeleteId(null);
     }
   };
-
-  const SemesterSection = ({ sem, label }: { sem: 'semester1' | 'semester2'; label: string }) => (
-    <div className="space-y-3">
-      <div className={`p-3 rounded-xl text-white font-bold devanagari text-center ${sem === 'semester1' ? 'gradient-orange' : 'gradient-green'}`}>
-        {label}
-      </div>
-      <div className="space-y-2">
-        {form[sem].subjects.map((subj, idx) => (
-          <div key={idx} className="flex items-center gap-2">
-            <span className="flex-1 text-sm devanagari text-foreground">{subj.subject}</span>
-            <Select value={subj.grade} onValueChange={v => updateGrade(sem, idx, v)}>
-              <SelectTrigger className="w-24 h-8 text-sm">
-                <SelectValue placeholder="श्रेणी" />
-              </SelectTrigger>
-              <SelectContent>
-                {GRADES.map(g => (
-                  <SelectItem key={g} value={g} className="devanagari">{g}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        ))}
-      </div>
-      <div className="space-y-2 pt-2">
-        <div>
-          <Label className="devanagari text-xs">विशेष प्रगती</Label>
-          <Input
-            value={form[sem].specialProgress}
-            onChange={e => updateSemField(sem, 'specialProgress', e.target.value)}
-            placeholder="Special Progress"
-            className="devanagari text-sm h-8"
-          />
-        </div>
-        <div>
-          <Label className="devanagari text-xs">आवड/छंद</Label>
-          <Input
-            value={form[sem].hobby}
-            onChange={e => updateSemField(sem, 'hobby', e.target.value)}
-            placeholder="Hobby/Interest"
-            className="devanagari text-sm h-8"
-          />
-        </div>
-        <div>
-          <Label className="devanagari text-xs">सुधारणा आवश्यक</Label>
-          <Input
-            value={form[sem].improvement}
-            onChange={e => updateSemField(sem, 'improvement', e.target.value)}
-            placeholder="Needs Improvement"
-            className="devanagari text-sm h-8"
-          />
-        </div>
-      </div>
-    </div>
-  );
 
   return (
     <div className="space-y-5 animate-fade-in">
@@ -320,10 +340,22 @@ export default function EnterResultPage() {
             </div>
 
             {/* Semester 1 */}
-            <SemesterSection sem="semester1" label="प्रथम सत्र निकाल" />
+            <SemesterSection
+              sem="semester1"
+              label="प्रथम सत्र निकाल"
+              semData={form.semester1}
+              onGradeChange={(idx, grade) => updateGrade('semester1', idx, grade)}
+              onFieldChange={(field, value) => updateSemField('semester1', field, value)}
+            />
 
             {/* Semester 2 */}
-            <SemesterSection sem="semester2" label="द्वितीय सत्र निकाल" />
+            <SemesterSection
+              sem="semester2"
+              label="द्वितीय सत्र निकाल"
+              semData={form.semester2}
+              onGradeChange={(idx, grade) => updateGrade('semester2', idx, grade)}
+              onFieldChange={(field, value) => updateSemField('semester2', field, value)}
+            />
 
             <DialogFooter className="pt-2">
               <Button type="button" variant="outline" onClick={() => setOpen(false)}>रद्द करा</Button>

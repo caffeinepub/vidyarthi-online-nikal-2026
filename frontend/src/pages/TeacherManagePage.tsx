@@ -1,17 +1,40 @@
 import React, { useState } from 'react';
 import { useTeacherLogins, useAddTeacherLogin, useUpdateTeacherLogin, useDeleteTeacherLogin, useSchools } from '../hooks/useQueries';
 import { TeacherLogin, SchoolExtra } from '../lib/localStorage';
+import { useAuth } from '../contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Plus, Pencil, Trash2, Settings, Phone, School } from 'lucide-react';
+import { Plus, Pencil, Trash2, Settings, Phone, School, ShieldOff } from 'lucide-react';
 
 const emptyForm = { udise: '', mobile: '' };
 
 export default function TeacherManagePage() {
+  const { session } = useAuth();
+
+  // Admin-only access guard
+  if (session?.role !== 'admin') {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 animate-fade-in">
+        <div className="p-5 rounded-full bg-destructive/10 text-destructive">
+          <ShieldOff size={48} />
+        </div>
+        <h2 className="text-2xl font-bold text-foreground devanagari">प्रवेश नाकारला</h2>
+        <p className="text-muted-foreground devanagari text-center max-w-sm">
+          हे पृष्ठ फक्त Admin साठी आहे. तुम्हाला या पृष्ठावर प्रवेश करण्याची परवानगी नाही.
+        </p>
+        <p className="text-sm text-muted-foreground">Access Denied — Admin only page.</p>
+      </div>
+    );
+  }
+
+  return <TeacherManageContent />;
+}
+
+function TeacherManageContent() {
   const { data: logins = [], isLoading } = useTeacherLogins();
   const { data: schools = [] } = useSchools();
   const addLogin = useAddTeacherLogin();
@@ -193,9 +216,9 @@ export default function TeacherManagePage() {
               <Button
                 type="submit"
                 disabled={saving}
-                className="gradient-red text-white border-0 hover:opacity-90"
+                className="gradient-red text-white border-0 hover:opacity-90 devanagari"
               >
-                {saving ? 'सेव्ह होत आहे...' : 'सेव्ह करा'}
+                {saving ? 'सेव्ह होत आहे...' : editItem ? 'अपडेट करा' : 'जोडा'}
               </Button>
             </DialogFooter>
           </form>
@@ -206,36 +229,15 @@ export default function TeacherManagePage() {
       <AlertDialog open={deleteId !== null} onOpenChange={open => !open && setDeleteId(null)}>
         <AlertDialogContent className="rounded-2xl">
           <AlertDialogHeader>
-            <AlertDialogTitle className="devanagari">शिक्षक लॉगिन हटवायचे का?</AlertDialogTitle>
-            <AlertDialogDescription className="devanagari">
-              हे हटवल्यावर हा शिक्षक लॉगिन करू शकणार नाही.
-            </AlertDialogDescription>
+            <AlertDialogTitle className="devanagari">शिक्षक लॉगिन हटवायचा का?</AlertDialogTitle>
+            <AlertDialogDescription className="devanagari">ही माहिती कायमची हटवली जाईल.</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="devanagari">रद्द करा</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              className="gradient-red text-white border-0 hover:opacity-90 devanagari"
-            >
-              हटवा
-            </AlertDialogAction>
+            <AlertDialogAction onClick={handleDelete} className="gradient-red text-white border-0 hover:opacity-90 devanagari">हटवा</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-
-      {/* Footer */}
-      <footer className="text-center text-xs text-muted-foreground pt-4 pb-2">
-        <p>© {new Date().getFullYear()} विद्यार्थी ऑनलाईन निकाल 2026 • Built with ❤️ using{' '}
-          <a
-            href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname || 'vidyarthi-nikal-2026')}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-primary hover:underline"
-          >
-            caffeine.ai
-          </a>
-        </p>
-      </footer>
     </div>
   );
 }
