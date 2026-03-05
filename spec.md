@@ -1,17 +1,35 @@
-# Specification
+# Vidyarthi Online Nikal 2026
 
-## Summary
-**Goal:** Enable teacher login via mobile number + U-DISE number, and filter all portal pages to show only data belonging to the logged-in teacher's U-DISE number.
+## Current State
+- Teacher login uses only mobile number to authenticate (checks against TeacherLogin records)
+- After teacher login, udise is stored in session from the matching TeacherLogin record
+- All pages (Home, School Info, Teacher Info, Student Info, Enter Result, Progress Report, Student Result Print) use the session udise to filter data for teachers
+- The filtering logic is already present in HomePage but may not be complete across all other pages
 
-**Planned changes:**
-- Update the Teacher tab on the Login page to accept both a Mobile Number field and a U-DISE Number field; authenticate against stored TeacherLogin records and save the U-DISE in the auth session on success.
-- Home page: filter student stats, result counts, and progress bar to the teacher's U-DISE; admins see all schools.
-- School Info page: teachers see only their own school record; Add/Edit/Delete controls hidden for teacher role; admins retain full CRUD.
-- Teacher Info page: teachers see only teacher records matching their U-DISE; admins see all.
-- Student Info page: teachers see only students from their U-DISE school; U-DISE field in add/edit form is pre-filled and read-only for teachers; admins see all.
-- Enter Results page: student list scoped to teacher's U-DISE; admins see all.
-- Progress Report page: U-DISE filter field pre-filled and locked to teacher's U-DISE; admins can enter any U-DISE.
-- Student Result Print page: U-DISE filter field pre-filled and locked to teacher's U-DISE; admins can enter any U-DISE.
-- Sidebar navigation: ensure teacher role has visible links to all pages — Home, School Info, Teacher Info, Student Info, Enter Results, Progress Report, and Student Result Print.
+## Requested Changes (Diff)
 
-**User-visible outcome:** Teachers can log in with their mobile number and U-DISE number and will only see data relevant to their school across all pages of the portal, while admins continue to have unrestricted access to all data.
+### Add
+- U-DISE number input field in Teacher login form (alongside existing mobile number field)
+- Validation: both mobile number AND U-DISE number must match a registered TeacherLogin record
+
+### Modify
+- Teacher login: validate that teacherMobile AND teacherUdise both match a single TeacherLogin record
+- School Info page: filter schools by teacher's udise (show only the teacher's school)
+- Teacher Info page: filter teachers by teacher's udise (show only teachers from that school)
+- Student Info page: filter students by teacher's udise (show only students from that school)
+- Enter Result page: filter results by teacher's udise (show only results for their school's students); pre-fill UDISE dropdown to teacher's UDISE
+- Progress Report page: filter/restrict to teacher's udise
+- Student Result Print page: filter/restrict to teacher's udise
+
+### Remove
+- Nothing removed
+
+## Implementation Plan
+1. Update LoginPage.tsx: add `teacherUdise` state, add U-DISE input field in teacher form, update handleTeacherLogin to validate both mobile AND udise match same record
+2. Ensure AuthContext TeacherSession always carries udise (already supported)
+3. Update SchoolInfoPage.tsx: filter schools by teacher's udise when role is teacher
+4. Update TeacherInfoPage.tsx: filter teachers by udise when role is teacher
+5. Update StudentInfoPage.tsx: filter students by udise when role is teacher (already partially done, ensure table shows filtered data)
+6. Update EnterResultPage.tsx: filter results by udise for teacher; pre-select UDISE dropdown to teacher's udise
+7. Update ProgressReportPage.tsx: restrict udise dropdown to teacher's udise when role is teacher
+8. Update StudentResultPrintPage.tsx: restrict udise dropdown to teacher's udise when role is teacher
