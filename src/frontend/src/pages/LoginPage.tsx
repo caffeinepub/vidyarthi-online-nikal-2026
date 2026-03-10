@@ -16,6 +16,14 @@ import { getStudents, getTeacherLogins } from "../lib/localStorage";
 
 type LoginTab = "admin" | "teacher" | "student";
 
+const inputClass =
+  "bg-white/25 border-white/50 text-white placeholder:text-white/60 focus:border-yellow-300 focus:ring-2 focus:ring-yellow-300/30";
+
+const inputStyle: React.CSSProperties = {
+  WebkitTextFillColor: "white",
+  caretColor: "white",
+};
+
 export default function LoginPage() {
   const { login } = useAuth();
   const [activeTab, setActiveTab] = useState<LoginTab>("admin");
@@ -42,7 +50,7 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
     setTimeout(() => {
-      if (adminUser === "admin" && adminPass === "admin") {
+      if (adminUser === "admin" && adminPass === "admin123") {
         login({ role: "admin", username: "admin" });
       } else {
         setError("चुकीचे username किंवा password!");
@@ -175,7 +183,7 @@ export default function LoginPage() {
 
       {/* Login Card */}
       <div className="w-full max-w-md animate-fade-in">
-        <div className="bg-white/10 backdrop-blur-md rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
+        <div className="bg-white/15 backdrop-blur-md rounded-3xl shadow-2xl border border-white/30 overflow-hidden">
           {/* Tab Selector */}
           <div className="flex">
             {tabs.map((tab) => (
@@ -186,6 +194,7 @@ export default function LoginPage() {
                   setActiveTab(tab.key);
                   setError("");
                 }}
+                data-ocid={`login.${tab.key}.tab`}
                 className={`flex-1 flex flex-col items-center gap-1 py-4 text-sm font-semibold transition-all duration-200 ${
                   activeTab === tab.key
                     ? `${tab.bg} text-white shadow-inner`
@@ -201,7 +210,10 @@ export default function LoginPage() {
           {/* Form Area */}
           <div className="p-6">
             {error && (
-              <div className="mb-4 p-3 rounded-xl bg-red-500/20 border border-red-400/30 text-red-200 text-sm devanagari text-center">
+              <div
+                data-ocid="login.error_state"
+                className="mb-4 p-3 rounded-xl bg-red-500/30 border border-red-400/50 text-red-100 text-sm devanagari text-center font-medium"
+              >
                 {error}
               </div>
             )}
@@ -209,45 +221,52 @@ export default function LoginPage() {
             {activeTab === "admin" && (
               <form onSubmit={handleAdminLogin} className="space-y-4">
                 <div>
-                  <Label className="text-white/80 text-sm mb-1 block">
+                  <Label className="text-white font-semibold text-sm mb-2 block">
                     Username
                   </Label>
                   <div className="relative">
                     <Shield
                       size={16}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-white/60 z-10"
                     />
                     <Input
+                      data-ocid="login.admin.input"
                       value={adminUser}
                       onChange={(e) => setAdminUser(e.target.value)}
                       placeholder="admin"
-                      className="pl-9 bg-white/10 border-white/20 text-white placeholder:text-white/30 focus:border-orange-400"
+                      className={`pl-9 ${inputClass}`}
+                      style={inputStyle}
                       required
+                      autoComplete="username"
                     />
                   </div>
                 </div>
                 <div>
-                  <Label className="text-white/80 text-sm mb-1 block">
+                  <Label className="text-white font-semibold text-sm mb-2 block">
                     Password
                   </Label>
                   <div className="relative">
                     <Hash
                       size={16}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-white/60 z-10"
                     />
                     <Input
+                      data-ocid="login.admin.password.input"
                       type="password"
                       value={adminPass}
                       onChange={(e) => setAdminPass(e.target.value)}
-                      placeholder="••••••"
-                      className="pl-9 bg-white/10 border-white/20 text-white placeholder:text-white/30 focus:border-orange-400"
+                      placeholder="••••••••"
+                      className={`pl-9 ${inputClass}`}
+                      style={inputStyle}
                       required
+                      autoComplete="current-password"
                     />
                   </div>
                 </div>
                 <Button
                   type="submit"
                   disabled={loading}
+                  data-ocid="login.admin.submit_button"
                   className="w-full gradient-orange text-white font-bold py-3 rounded-xl border-0 hover:opacity-90 transition-opacity"
                 >
                   {loading ? "लॉगिन होत आहे..." : "Admin Login"}
@@ -258,38 +277,43 @@ export default function LoginPage() {
             {activeTab === "teacher" && (
               <form onSubmit={handleTeacherLogin} className="space-y-4">
                 <div>
-                  <Label className="text-white/80 text-sm mb-1 block devanagari">
+                  <Label className="text-white font-semibold text-sm mb-2 block devanagari">
                     मोबाईल नंबर
                   </Label>
                   <div className="relative">
                     <Phone
                       size={16}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-white/60 z-10"
                     />
                     <Input
+                      data-ocid="login.teacher.mobile.input"
                       value={teacherMobile}
                       onChange={(e) => setTeacherMobile(e.target.value)}
                       placeholder="10 अंकी मोबाईल नंबर"
-                      className="pl-9 bg-white/10 border-white/20 text-white placeholder:text-white/30 focus:border-green-400"
+                      className={`pl-9 ${inputClass}`}
+                      style={inputStyle}
                       required
                       maxLength={10}
+                      autoComplete="tel"
                     />
                   </div>
                 </div>
                 <div>
-                  <Label className="text-white/80 text-sm mb-1 block devanagari">
+                  <Label className="text-white font-semibold text-sm mb-2 block devanagari">
                     युडायस नंबर
                   </Label>
                   <div className="relative">
                     <Building2
                       size={16}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-white/60 z-10"
                     />
                     <Input
+                      data-ocid="login.teacher.udise.input"
                       value={teacherUdise}
                       onChange={(e) => setTeacherUdise(e.target.value)}
                       placeholder="शाळेचा युडायस नंबर"
-                      className="pl-9 bg-white/10 border-white/20 text-white placeholder:text-white/30 focus:border-green-400"
+                      className={`pl-9 ${inputClass}`}
+                      style={inputStyle}
                       required
                     />
                   </div>
@@ -297,6 +321,7 @@ export default function LoginPage() {
                 <Button
                   type="submit"
                   disabled={loading}
+                  data-ocid="login.teacher.submit_button"
                   className="w-full gradient-green text-white font-bold py-3 rounded-xl border-0 hover:opacity-90 transition-opacity"
                 >
                   {loading ? "लॉगिन होत आहे..." : "शिक्षक Login"}
@@ -307,58 +332,67 @@ export default function LoginPage() {
             {activeTab === "student" && (
               <form onSubmit={handleStudentLogin} className="space-y-3">
                 <div>
-                  <Label className="text-white/80 text-sm mb-1 block devanagari">
+                  <Label className="text-white font-semibold text-sm mb-2 block devanagari">
                     युडायस नंबर
                   </Label>
                   <Input
+                    data-ocid="login.student.udise.input"
                     value={studentUdise}
                     onChange={(e) => setStudentUdise(e.target.value)}
                     placeholder="UDISE Number"
-                    className="bg-white/10 border-white/20 text-white placeholder:text-white/30 focus:border-blue-400"
+                    className={inputClass}
+                    style={inputStyle}
                     required
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <Label className="text-white/80 text-sm mb-1 block devanagari">
+                    <Label className="text-white font-semibold text-sm mb-2 block devanagari">
                       इयत्ता
                     </Label>
                     <Input
+                      data-ocid="login.student.class.input"
                       value={studentClass}
                       onChange={(e) => setStudentClass(e.target.value)}
                       placeholder="उदा. 5"
-                      className="bg-white/10 border-white/20 text-white placeholder:text-white/30 focus:border-blue-400"
+                      className={inputClass}
+                      style={inputStyle}
                       required
                     />
                   </div>
                   <div>
-                    <Label className="text-white/80 text-sm mb-1 block devanagari">
+                    <Label className="text-white font-semibold text-sm mb-2 block devanagari">
                       तुकडी
                     </Label>
                     <Input
+                      data-ocid="login.student.division.input"
                       value={studentDivision}
                       onChange={(e) => setStudentDivision(e.target.value)}
                       placeholder="उदा. अ"
-                      className="bg-white/10 border-white/20 text-white placeholder:text-white/30 focus:border-blue-400"
+                      className={inputClass}
+                      style={inputStyle}
                       required
                     />
                   </div>
                 </div>
                 <div>
-                  <Label className="text-white/80 text-sm mb-1 block devanagari">
+                  <Label className="text-white font-semibold text-sm mb-2 block devanagari">
                     हजेरी नंबर
                   </Label>
                   <Input
+                    data-ocid="login.student.attendance.input"
                     value={studentAttendance}
                     onChange={(e) => setStudentAttendance(e.target.value)}
                     placeholder="हजेरी क्रमांक"
-                    className="bg-white/10 border-white/20 text-white placeholder:text-white/30 focus:border-blue-400"
+                    className={inputClass}
+                    style={inputStyle}
                     required
                   />
                 </div>
                 <Button
                   type="submit"
                   disabled={loading}
+                  data-ocid="login.student.submit_button"
                   className="w-full gradient-blue text-white font-bold py-3 rounded-xl border-0 hover:opacity-90 transition-opacity"
                 >
                   {loading ? "लॉगिन होत आहे..." : "विद्यार्थी Login"}
